@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>BaseRender</title>
+    <script src="../lib/vue.min.js"></script>
+    <script src="https://lc.yinhaiyun.com/yh-material-unpkg/@yh/ta404-ui-dist@1.5.158/dist/ta404-ui.umd.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://lc.yinhaiyun.com/yh-material-unpkg/@yh/ta404-ui-dist@1.5.158/dist/style.css"></link>
+    <style>
+        html,body,#app{
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+    <script >
+        const schema = {
+            tag: 'ta-button',
+            attrsMap: {
+                size: 'small',
+                type: 'primary'
+            },
+            children: [
+                {
+                    type: 3,
+                    text: '按钮'
+                }
+            ]
+        }
+        const option = {
+            render: h => {
+                return h(schema.tag, schema.attrsMap, schema.children[0].text)
+            }
+        }
+        setTimeout(() => {
+            new Vue(option).$mount('#app')
+        })
+    </script>
+</head>
+<body>
+<div id="app">
+
+</div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>DataURL</title>
+    <script src="../lib/vue.min.js"></script>
+    <script src="https://lc.yinhaiyun.com/yh-material-unpkg/@yh/ta404-ui-dist@1.5.158/dist/ta404-ui.umd.js"></script>
+    <script src="../lib/base64.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://lc.yinhaiyun.com/yh-material-unpkg/@yh/ta404-ui-dist@1.5.158/dist/style.css"></link>
+    <style>
+        html,body,#app{
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+    <script type="module" >
+        // 转Base64工具 https://tools.fun/base64.html
+        // 模拟读取到js内容
+        const js = `function queryTableData () {
+            return  [
+                { id: 10001, name: 'Test1', role: 'Develop', sex: '1', age: 28, address: 'ta-big-table 从入门到放弃' },
+                { id: 10002, name: 'Test2', role: 'Test', sex: '2', age: 22, address: 'Guangzhou' },
+                { id: 10003, name: 'Test3', role: 'PM', sex: '1', age: 32, address: 'Shanghai' },
+                { id: 10004, name: 'Test4', role: 'Designer', sex: '2', age: 23, address: 'ta-big-table 从入门到放弃' },
+                { id: 10005, name: 'Test5', role: 'Develop', sex: '1', age: 30, address: 'Shanghai' },
+                { id: 10006, name: 'Test6', role: 'Designer', sex: '2', age: 21, address: 'ta-big-table 从入门到放弃' },
+                { id: 10007, name: 'Test7', role: 'Test', sex: '1', age: 29, address: 'ta-big-table 从入门到放弃' },
+                { id: 10008, name: 'Test8', role: 'Develop', sex: '2', age: 35, address: 'ta-big-table 从入门到放弃' }
+            ]
+        }
+
+        export {
+            queryTableData
+        }`
+
+        // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Basics_of_HTTP/Data_URLs
+        // data:[<mediatype>][;base64],<data>
+        // DATA URL 的作用，一般就是将经过Base64编码的数据嵌入网页中，从而减少请求资源的链接数。
+        // 后面的base64字符就是文本内容经过base64编码后的数据，浏览器会对其解码并渲染该资源
+        // 使用Data URL式替代外部文件js载入的效果
+
+        const $api = (await import('data:text/javascript;base64,'+ Base64.encode(js)));
+        console.log('$api', $api)
+        const option = {
+            data () {
+                return {
+                    tableData: [],
+                    sexList: [
+                        {
+                            label: '女',
+                            value: '2'
+                        },
+                        {
+                            label: '男',
+                            value: '1'
+                        }
+                    ]
+                }
+            },
+            template: `     <ta-big-table
+          border
+          stripe
+          resizable
+          highlight-hover-row
+          height="400"
+          :checkbox-config="{labelField: 'id', highlight: true, range: true}"
+          :data="tableData">
+          <ta-big-table-column type="seq" width="60"></ta-big-table-column>
+          <ta-big-table-column type="checkbox" title="ID" width="140"></ta-big-table-column>
+          <ta-big-table-column field="name" title="Name" sortable></ta-big-table-column>
+          <ta-big-table-column field="sex" title="Sex" :filters="sexList"   ></ta-big-table-column>
+          <ta-big-table-column
+            field="age"
+            title="Age"
+            sortable
+            :filters="[{label: '大于16岁', value: 16}, {label: '大于26岁', value: 26}, {label: '大于30岁', value: 30}]"
+            :filter-method="filterAgeMethod"></ta-big-table-column>
+          <ta-big-table-column field="address" title="Address" show-overflow></ta-big-table-column>
+        </ta-big-table>`,
+            mounted() {
+                const { queryTableData } = $api
+                this.tableData = queryTableData()
+            },
+            methods: {
+                filterAgeMethod ({ value, row, column }) {
+                    return row.age >= value
+                }
+            }
+        }
+        setTimeout(() => {
+            new Vue(option).$mount('#app')
+        })
+    </script>
+</head>
+<body>
+<div id="app">
+
+</div>
+</body>
+</html>
